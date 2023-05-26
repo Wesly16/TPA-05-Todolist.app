@@ -1,60 +1,95 @@
-import { useState, useEffect } from "react";
-import { HiTrash, HiPencilAlt } from "react-icons/hi";
+import { useState, useRef, useEffect } from "react";
+import { HiTrash, HiPencilAlt, HiCheckCircle } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { actions } from "../features/todos/todosSlice";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
-const Todo = ({ todo }) => {
+const MySwal = withReactContent(Swal);
+
+const TodoCard = ({ todo }) => {
   const dispatch = useDispatch();
+  const [edit, setEdit] = useState(false);
+  const [updatedContent, setUpdatedContent] = useState(todo.content);
+  const inputRef = useRef(null);
 
   const handleToggle = (id) => {
-    dispatch(actions.toggleTodo({ id }));
-  };
-
-  const handleRemove = (id) => {
-    dispatch(actions.deleteTodo({ id }));
-  };
-
-  const handleEdit = (id, content) => {
-    dispatch(actions.editTodo({ id, content }));
-  };
-
-  const [edit, setEdit] = useState(false);
-  const [editedContent, setEditedContent] = useState(todo.content);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSave();
+    if (!edit) {
+      dispatch(actions.toggleTodo({ id }));
     }
   };
 
-  const handleSave = () => {
-    handleEdit(todo.id, editedContent);
+  const handleRemove = (id) => {
+    MySwal.fire({
+      title: "Are you sure want to delete this?",
+      text: "You won't be able to revert this!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(removeTodo(id));
+        MySwal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
+  const handleEdit = () => {
+    setEdit(true);
+  };
+
+  const handleSave = (id) => {
+    dispatch(actions.editTodo({ id, content: updatedContent }));
     setEdit(false);
   };
 
+  const handleKeyDown = (e, id) => {
+    if (e.key === "Enter") {
+      handleSave(id);
+    }
+  };
+
   useEffect(() => {
-    setEditedContent(todo.content);
-  }, [todo.content]);
+    if (edit) {
+      inputRef.current.focus();
+    }
+  }, [edit]);
 
   return (
-    <div className="flex justify-between p-2 bg-white rounded mb-4 items-center border border-gray-300">
-      <div className="flex gap-1 items-center">
-        <input type="checkbox" name="completed" checked={todo.completed} onChange={() => handleToggle(todo.id)} style={{ width: "1.2rem", height: "1.2rem" }} />
-        <label htmlFor="completed"></label>
-      </div>
-      <div className={`flex-grow ${todo.completed ? "line-through" : ""}`}>
-        {edit ? <input type="text" name="content" value={editedContent} onChange={(e) => setEditedContent(e.target.value)} onKeyDown={handleKeyDown} /> : <p>{todo.content}</p>}
-      </div>
-      <div className="flex gap-2 items-center">
-        <button className="btn btn-transparent" onClick={() => setEdit((value) => !value)}>
-          <HiPencilAlt style={{ color: "#4B5C6B", width: "1.2rem", height: "1.2rem" }} />
-        </button>
-        <button className="btn btn-transparent" onClick={() => handleRemove(todo.id)}>
-          <HiTrash style={{ color: "#4B5C6B", width: "1.2rem", height: "1.2rem" }} />
-        </button>
+    <div className="flex justify-between p-2 bg-gray-500/50 rounded mb-4 items-center">
+      {edit ? (
+        <input type="text" value={updatedContent} onChange={(e) => setUpdatedContent(e.target.value)} className="border border-gray-300 rounded p-1" ref={inputRef} onKeyDown={(e) => handleKeyDown(e, todo.id)} />
+      ) : (
+        <p className="font-bold" style={{ textDecoration: todo.completed ? "line-through" : "none" }}>
+          {todo.content}
+        </p>
+      )}
+
+      <div className="flex gap-3 items-right">
+        <div className="flex gap-3 items-right">
+          <input type="checkbox" name="completed" checked={todo.completed} onChange={() => handleToggle(todo.id)} />
+        </div>
+
+        {!todo.completed && (
+          <div className="flex gap-3 items-center">
+            {edit ? (
+              <button className="btn" onClick={() => handleSave(todo.id)}>
+                <HiCheckCircle />
+              </button>
+            ) : (
+              <button className="btn" onClick={handleEdit}>
+                <HiPencilAlt />
+              </button>
+            )}
+            <button className="btn" onClick={() => handleRemove(todo.id)}>
+              <HiTrash />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Todo;
+export default TodoCard;
