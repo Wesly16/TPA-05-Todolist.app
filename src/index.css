@@ -4,6 +4,9 @@
 
 @layer components {
   .btn {
-    @apply p-2 bg-blue-500 rounded hover:bg-blue-700;
+    @apply p-2 bg-gradient-to-r from-violet-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500;
   }
+}
+body {
+  background-color: lightgoldenrodyellow;
 }
