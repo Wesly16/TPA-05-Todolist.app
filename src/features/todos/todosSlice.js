@@ -15,7 +15,7 @@ export const todosSlice = createSlice({
       if (state.userInput === "") return;
 
       const newTodo = {
-        id: uniqueId(),
+        id: Math.floor(Math.random() * 1000),
         content: state.userInput,
         completed: false,
       };
