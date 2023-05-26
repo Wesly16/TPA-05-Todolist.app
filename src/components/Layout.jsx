@@ -26,17 +26,17 @@ const Layout = () => {
         <ul className="flex gap-2">
           <li>
             <NavLink to={"/"} className={({ isActive }) => (isActive ? "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-[#1AAE9F]" : "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-slate-500")}>
-              All
+              ALL
             </NavLink>
           </li>
           <li>
             <NavLink to={"/active"} className={({ isActive }) => (isActive ? "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-[#1AAE9F]" : "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-slate-500")}>
-              Active
+              ACTIVE
             </NavLink>
           </li>
           <li>
             <NavLink to={"/completed"} className={({ isActive }) => (isActive ? "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-[#1AAE9F]" : "rounded-full text-white font-medium text-sm px-2.5 py-0.5 bg-slate-500")}>
-              Completed
+              COMPLETED
             </NavLink>
           </li>
         </ul>
