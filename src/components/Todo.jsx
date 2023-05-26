@@ -30,7 +30,7 @@ const TodoCard = ({ todo }) => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(removeTodo(id));
+        dispatch(actions.deleteTodo({ id }));
         MySwal.fire("Deleted!", "Your file has been deleted.", "success");
       }
     });
@@ -40,6 +40,7 @@ const TodoCard = ({ todo }) => {
   };
 
   const handleSave = (id) => {
+    MySwal.fire("Success!", "Your todo has been saved.", "success");
     dispatch(actions.editTodo({ id, content: updatedContent }));
     setEdit(false);
   };
